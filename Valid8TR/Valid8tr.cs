@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using ISO_Classes;
 using PhoneNumbers;
 
 namespace Valid8TR
@@ -15,7 +16,7 @@ namespace Valid8TR
             if (IsGPSCoords(input))
                 return "GPS";
             if (IsImageUrl(input))
-                return "ImageUrl";
+                return "Image";
             if (IsUrl(input))
                 return "Link";
             if (IsDateTime(input))
@@ -58,7 +59,7 @@ namespace Valid8TR
             var sb = new System.Text.StringBuilder(input);
             var List = GetImageUrls(input);
             foreach (var i in List)
-                sb.Replace(i, $"<img src=\"{i}\" alt=\"userimage\" />");
+                sb.Replace(i, $"<img src=\"{i}\" alt=\"Image Failed To Load\" />");
 
             List.Clear();
             List = GetEmails(sb.ToString());
@@ -73,6 +74,8 @@ namespace Valid8TR
             List = GetUrls(sb.ToString());
             foreach (var l in List)
                 sb.Replace(l, $"<a href=\"{l}\">{l}</a>");
+
+            return sb.ToString();
         }
 
         bool IsEmail(string input)
@@ -150,7 +153,14 @@ namespace Valid8TR
 
         bool IsGPSCoords(string input)
         {
-            return Regex.IsMatch(input, @"([SN])\s(\d+)\s(\d+(?:\.\d+)?)\s([EW])\s(\d+)\s(\d+(?:\.\d*)?)");
+            Coordinate tCoord = new Coordinate();
+            try
+            {
+                tCoord.ParseIsoString(input);
+                return true;
+            }
+            catch { return false; }
+            //return Regex.IsMatch(input, @"([SN])\s(\d+)\s(\d+(?:\.\d+)?)\s([EW])\s(\d+)\s(\d+(?:\.\d*)?)");
         }
 
         bool IsGoogleMaps(string input)
@@ -163,7 +173,7 @@ namespace Valid8TR
 
         bool IsImageUrl(string input)
         {
-            if (Regex.IsMatch(input, @"(https?:)?//?(\\S+?)\\.(jpg|png|gif)"))
+            if (Regex.IsMatch(input, @"(https?:)?//?[^\'<>]+?\.(jpg|jpeg|gif|png)"))
                 return true;
 
             return false;
@@ -172,7 +182,7 @@ namespace Valid8TR
         List<string> GetImageUrls(string input)
         {
             List<string> List = new List<string>();
-            var m = Regex.Matches(input, @"(https?:)?//?(\\S+?)\\.(jpg|png|gif)");
+            var m = Regex.Matches(input, @"(https?:)?//?[^\'<>]+?\.(jpg|jpeg|gif|png)");
             for (int i = 0; i < m.Count; i++)
                 List.Add(m[i].Value);
 
