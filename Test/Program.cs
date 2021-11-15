@@ -10,8 +10,8 @@ namespace Test
             Valid8tr ValidationEngine = new Valid8tr();
             Console.WriteLine("-- Valid8TR Engine --");
             while (true)
-            Console.WriteLine(ValidationEngine.Validate(Console.ReadLine()));
-            Console.ReadKey();
+                Console.WriteLine(ValidationEngine.Validate(Console.ReadLine()));
+
         }
     }
 }

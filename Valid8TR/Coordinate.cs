@@ -129,7 +129,7 @@ namespace ISO_Classes
             return (float)(1852 * 60 * d / rad);
         }
         // Parsing method
-        public void ParseIsoString(string isoStr)
+        public bool ParseIsoString(string isoStr)
         {
             // Parse coordinate in the following ISO 6709 formats:
             // Latitude and Longitude in Degrees:
@@ -146,11 +146,11 @@ namespace ISO_Classes
             // �DDMMSS.SSSS�DDDMMSS.SSSS�AAA.AAA/ (eg +123456.7-0985432.1+15.9/)
 
             if (isoStr.Length < 18)  // Check for minimum length
-                isoStr = null;
+                return false;
 
             if (!isoStr.EndsWith("/"))  // Check for trailing slash
-                isoStr = null;
-            isoStr = isoStr.Remove(isoStr.Length - 1); // Remove trailing slash
+                return false;
+            else isoStr = isoStr.Remove(isoStr.Length - 1); // Remove trailing slash
 
             string[] parts = isoStr.Split(new char[] { '+', '-' }, StringSplitOptions.None);
             if (parts.Length < 3 || parts.Length > 4)  // Check for parts count
@@ -191,6 +191,8 @@ namespace ISO_Classes
                 latitude = -latitude;
             if (isoStr[parts[1].Length + 1] == '-')
                 longitude = -longitude;
+
+            return true;
         }
         #endregion
 
